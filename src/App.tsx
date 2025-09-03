@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useTodos } from './hooks/useTodos.js';
-import { AddTodo, TodoList } from './components/index.js';
+import { useNotifications } from './hooks/useNotifications.js';
+import { AddTodo, TodoList, NotificationPermission } from './components/index.js';
 import type { CreateTodoInput, UpdateTodoInput } from './types/todo.js';
 import './styles/App.css'
 
@@ -9,21 +10,67 @@ function App() {
     sort: { field: 'createdAt', direction: 'desc' }
   });
 
+  const [notificationState, notificationActions] = useNotifications({
+    onNotificationFired: (todoId: string) => {
+      console.log(`Notification fired for todo: ${todoId}`);
+    },
+    onPermissionChange: (permission) => {
+      console.log(`Notification permission changed: ${permission}`);
+    }
+  });
+
   const handleAddTodo = useCallback(async (input: CreateTodoInput) => {
-    await actions.createTodo(input);
-  }, [actions]);
+    const newTodo = await actions.createTodo(input);
+    
+    // Schedule notifications for the new todo if it has reminder/due times
+    if (newTodo.reminderTime) {
+      notificationActions.scheduleReminder(newTodo);
+    } else if (newTodo.dueDate) {
+      notificationActions.scheduleDueNotification(newTodo);
+    }
+  }, [actions, notificationActions]);
 
   const handleUpdateTodo = useCallback(async (id: string, input: UpdateTodoInput) => {
-    await actions.updateTodo(id, input);
-  }, [actions]);
+    const updatedTodo = await actions.updateTodo(id, input);
+    
+    // Clear existing notification and reschedule if needed
+    notificationActions.clearNotification(id);
+    if (!updatedTodo.completed) {
+      if (updatedTodo.reminderTime) {
+        notificationActions.scheduleReminder(updatedTodo);
+      } else if (updatedTodo.dueDate) {
+        notificationActions.scheduleDueNotification(updatedTodo);
+      }
+    }
+  }, [actions, notificationActions]);
 
   const handleDeleteTodo = useCallback(async (id: string) => {
+    // Clear notification before deleting
+    notificationActions.clearNotification(id);
     await actions.deleteTodo(id);
-  }, [actions]);
+  }, [actions, notificationActions]);
 
   const handleToggleTodo = useCallback(async (id: string) => {
-    await actions.toggleTodo(id);
-  }, [actions]);
+    const updatedTodo = await actions.toggleTodo(id);
+    
+    // Clear notification if todo is completed, reschedule if uncompleted
+    if (updatedTodo.completed) {
+      notificationActions.clearNotification(id);
+    } else {
+      if (updatedTodo.reminderTime) {
+        notificationActions.scheduleReminder(updatedTodo);
+      } else if (updatedTodo.dueDate) {
+        notificationActions.scheduleDueNotification(updatedTodo);
+      }
+    }
+  }, [actions, notificationActions]);
+
+  // Reschedule notifications when todos change
+  useEffect(() => {
+    if (!isLoading && notificationState.permission === 'granted') {
+      notificationActions.rescheduleNotifications(todos);
+    }
+  }, [todos, isLoading, notificationState.permission, notificationActions]);
 
   const completedCount = todos.filter(todo => todo.completed).length;
   const totalCount = todos.length;
@@ -54,6 +101,26 @@ function App() {
             </button>
           </div>
         )}
+
+        {notificationState.error && (
+          <div className="global-error" role="alert">
+            <strong>Notification Error:</strong> {notificationState.error}
+            <button
+              onClick={() => notificationActions.clearError()}
+              className="retry-button"
+              aria-label="Clear notification error"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        <NotificationPermission
+          show={notificationState.isSupported && notificationState.permission !== 'granted'}
+          onPermissionChange={(permission) => {
+            console.log(`Permission changed to: ${permission}`);
+          }}
+        />
 
         <section className="add-todo-section">
           <AddTodo 

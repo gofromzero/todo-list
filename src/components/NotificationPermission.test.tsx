@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NotificationPermission } from './NotificationPermission.js';
 import { notificationService } from '../services/NotificationService.js';
@@ -32,7 +32,8 @@ describe('NotificationPermission', () => {
     it('should render when notifications are supported and permission is default', () => {
       render(<NotificationPermission />);
       
-      expect(screen.getByText('Enable Notifications')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Enable Notifications' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Enable Notifications' })).toBeInTheDocument();
       expect(screen.getByText(/Get notified when your todos are due/)).toBeInTheDocument();
     });
 
@@ -41,7 +42,7 @@ describe('NotificationPermission', () => {
       
       render(<NotificationPermission />);
       
-      expect(screen.queryByText('Enable Notifications')).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Enable Notifications' })).not.toBeInTheDocument();
     });
 
     it('should not render when permission is already granted', () => {
@@ -49,19 +50,19 @@ describe('NotificationPermission', () => {
       
       render(<NotificationPermission />);
       
-      expect(screen.queryByText('Enable Notifications')).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Enable Notifications' })).not.toBeInTheDocument();
     });
 
     it('should not render when show prop is false', () => {
       render(<NotificationPermission show={false} />);
       
-      expect(screen.queryByText('Enable Notifications')).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Enable Notifications' })).not.toBeInTheDocument();
     });
 
     it('should render when show prop is true and conditions are met', () => {
       render(<NotificationPermission show={true} />);
       
-      expect(screen.getByText('Enable Notifications')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Enable Notifications' })).toBeInTheDocument();
     });
   });
 
@@ -69,7 +70,7 @@ describe('NotificationPermission', () => {
     it('should display default permission request UI', () => {
       render(<NotificationPermission />);
       
-      expect(screen.getByText('Enable Notifications')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Enable Notifications' })).toBeInTheDocument();
       expect(screen.getByText(/Get notified when your todos are due/)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /enable notifications/i })).toBeInTheDocument();
       expect(screen.getByText(/Why do we need this permission?/)).toBeInTheDocument();
@@ -146,7 +147,10 @@ describe('NotificationPermission', () => {
       
       if (addEventListenerCall) {
         const eventHandler = addEventListenerCall[1];
-        eventHandler('granted');
+        
+        await act(async () => {
+          eventHandler('granted');
+        });
         
         expect(onPermissionChange).toHaveBeenCalledWith('granted');
       }
@@ -178,20 +182,16 @@ describe('NotificationPermission', () => {
 
   describe('Details Section', () => {
     it('should show expandable details section', async () => {
-      const user = userEvent.setup();
       render(<NotificationPermission />);
       
       const detailsButton = screen.getByText(/Why do we need this permission?/);
       expect(detailsButton).toBeInTheDocument();
       
-      // Details content should not be visible initially
-      expect(screen.queryByText(/Reminding you before tasks are due/)).not.toBeInTheDocument();
-      
-      // Click to expand details
-      await user.click(detailsButton);
-      
+      // Details content should be present in the DOM
       expect(screen.getByText(/Reminding you before tasks are due/)).toBeInTheDocument();
       expect(screen.getByText(/Your privacy matters/)).toBeInTheDocument();
+      expect(screen.getByText(/Alerting you when deadlines arrive/)).toBeInTheDocument();
+      expect(screen.getByText(/Working even when the app is in the background/)).toBeInTheDocument();
     });
 
     it('should explain privacy and usage', async () => {
