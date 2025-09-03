@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { CreateTodoInput } from '../types/todo.js';
+import '../styles/AddTodo.css';
 
 interface AddTodoProps {
   onAdd: (input: CreateTodoInput) => Promise<void>;
@@ -55,10 +56,21 @@ export const AddTodo: React.FC<AddTodoProps> = ({ onAdd, isLoading = false }) =>
   const disabled = isLoading || isSubmitting;
 
   return (
-    <form onSubmit={handleSubmit} className="add-todo-form" onKeyDown={handleKeyDown}>
+    <form 
+      onSubmit={handleSubmit} 
+      className={`add-todo-form ${isSubmitting ? 'loading' : ''}`} 
+      onKeyDown={handleKeyDown}
+      role="form"
+      aria-label="Add new todo"
+    >
+      <div className="add-todo-header">
+        <h2 className="add-todo-title">Add New Todo</h2>
+        <span className="add-todo-icon" aria-hidden="true">➕</span>
+      </div>
+
       <div className="form-group">
         <label htmlFor="todo-title" className="sr-only">
-          Todo title
+          Todo title (required)
         </label>
         <input
           id="todo-title"
@@ -68,9 +80,11 @@ export const AddTodo: React.FC<AddTodoProps> = ({ onAdd, isLoading = false }) =>
           placeholder="What needs to be done?"
           disabled={disabled}
           autoFocus
-          aria-label="Todo title"
-          aria-describedby={error ? 'title-error' : undefined}
+          required
+          aria-label="Todo title (required)"
+          aria-describedby={error ? 'title-error form-hint' : 'form-hint'}
           className={error ? 'error' : ''}
+          maxLength={200}
         />
       </div>
 
@@ -86,23 +100,36 @@ export const AddTodo: React.FC<AddTodoProps> = ({ onAdd, isLoading = false }) =>
           disabled={disabled}
           rows={2}
           aria-label="Todo description (optional)"
+          maxLength={500}
         />
+        <div className={`character-counter ${description.length > 450 ? 'warning' : ''} ${description.length > 500 ? 'error' : ''}`}>
+          {description.length}/500
+        </div>
       </div>
 
       {error && (
-        <div id="title-error" className="error-message" role="alert">
+        <div id="title-error" className="error-message" role="alert" aria-live="assertive">
           {error}
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={disabled || !title.trim()}
-        className="add-button"
-        aria-label="Add todo"
-      >
-        {isSubmitting ? 'Adding...' : 'Add Todo'}
-      </button>
+      <div className="form-actions">
+        <button
+          type="submit"
+          disabled={disabled || !title.trim()}
+          className={`add-button primary ${isSubmitting ? 'loading' : ''}`}
+          aria-label={isSubmitting ? 'Adding todo, please wait' : 'Add todo to list'}
+          aria-describedby="form-hint"
+        >
+          {isSubmitting ? 'Adding...' : 'Add Todo'}
+        </button>
+        
+        <div className="form-actions-secondary">
+          <div id="form-hint" className="form-hint">
+            <kbd>Enter</kbd> to add • <kbd>Escape</kbd> to clear
+          </div>
+        </div>
+      </div>
     </form>
   );
 };

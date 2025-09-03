@@ -1,0 +1,393 @@
+/* TodoItem Component Styles */
+
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-primary);
+  transition: all var(--transition-fast);
+  position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.todo-item:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+/* Todo States */
+.todo-item.completed {
+  background-color: var(--color-success-light);
+  border-color: var(--color-success);
+  opacity: 0.8;
+}
+
+.todo-item.completed .todo-title {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.todo-item.completed .todo-description {
+  color: var(--color-text-tertiary);
+}
+
+.todo-item.editing {
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-md);
+  background-color: var(--color-bg-secondary);
+}
+
+/* Overdue state (will be handled by Agent-4 for date logic) */
+.todo-item.overdue {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-light);
+}
+
+.todo-item.overdue .todo-meta {
+  color: var(--color-danger);
+}
+
+/* Due soon state */
+.todo-item.due-soon {
+  border-color: var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+.todo-item.due-soon .todo-meta {
+  color: var(--color-warning);
+}
+
+/* Checkbox Section */
+.todo-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.todo-checkbox input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: var(--color-success);
+  transition: all var(--transition-fast);
+}
+
+.todo-checkbox input[type="checkbox"]:hover {
+  transform: scale(1.1);
+}
+
+/* Content Section */
+.todo-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0; /* Allows text to wrap */
+  cursor: pointer;
+}
+
+.todo-item.editing .todo-content {
+  cursor: default;
+}
+
+.todo-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  margin: 0;
+  word-break: break-word;
+}
+
+.todo-description {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  word-break: break-word;
+}
+
+.todo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xs);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.due-date,
+.reminder-time {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+/* Edit Mode Inputs */
+.todo-title-input,
+.todo-description-input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  font-size: inherit;
+  font-family: inherit;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast);
+  resize: none;
+}
+
+.todo-title-input {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.todo-description-input {
+  font-size: var(--text-base);
+  min-height: 60px;
+}
+
+.todo-title-input:focus,
+.todo-description-input:focus {
+  border-color: var(--color-border-focus);
+  outline: none;
+}
+
+.todo-title-input.error {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-light);
+}
+
+/* Actions Section */
+.todo-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  padding-top: var(--spacing-xs);
+}
+
+.todo-actions button {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  padding: 0;
+  min-height: 36px; /* Touch-friendly */
+}
+
+.todo-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.edit-button {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.edit-button:hover:not(:disabled) {
+  background-color: var(--color-primary-light);
+}
+
+.delete-button {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: var(--color-danger-light);
+}
+
+.save-button {
+  border-color: var(--color-success);
+  color: var(--color-success);
+  background-color: var(--color-success-light);
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.cancel-button {
+  border-color: var(--color-text-tertiary);
+  color: var(--color-text-tertiary);
+}
+
+.cancel-button:hover:not(:disabled) {
+  background-color: var(--color-bg-tertiary);
+}
+
+/* Delete Confirmation */
+.delete-confirm {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.confirm-delete {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  background-color: var(--color-danger-light);
+}
+
+.confirm-delete:hover:not(:disabled) {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.cancel-delete {
+  border-color: var(--color-text-tertiary);
+  color: var(--color-text-tertiary);
+}
+
+.cancel-delete:hover:not(:disabled) {
+  background-color: var(--color-bg-tertiary);
+}
+
+/* Error Message */
+.error-message {
+  position: absolute;
+  bottom: calc(100% + var(--spacing-xs));
+  left: 0;
+  right: 0;
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  z-index: var(--z-tooltip);
+  box-shadow: var(--shadow-md);
+  animation: slideDown var(--transition-fast) ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+  .todo-item {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+  
+  .todo-title {
+    font-size: var(--text-base);
+  }
+  
+  .todo-description {
+    font-size: var(--text-sm);
+  }
+  
+  .todo-meta {
+    font-size: var(--text-xs);
+    gap: var(--spacing-sm);
+  }
+  
+  .due-date,
+  .reminder-time {
+    padding: var(--spacing-xs);
+    font-size: var(--text-xs);
+  }
+  
+  .todo-actions button {
+    width: 40px;
+    height: 40px;
+    min-height: 44px; /* Maintain touch-friendly size */
+  }
+  
+  /* Stack actions vertically on very small screens */
+  .todo-actions {
+    flex-direction: column;
+  }
+  
+  .delete-confirm {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .todo-item {
+    padding: var(--spacing-md);
+  }
+  
+  .todo-actions {
+    flex-direction: row;
+  }
+}
+
+/* Loading States */
+.todo-item.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.todo-item.loading .todo-content {
+  cursor: not-allowed;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .todo-item {
+    border-width: 2px;
+  }
+  
+  .todo-item.completed {
+    background-color: transparent;
+    border-style: dashed;
+  }
+  
+  .todo-actions button {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .todo-item,
+  .todo-actions button,
+  .todo-checkbox input[type="checkbox"] {
+    transition: none;
+  }
+  
+  .todo-item:hover,
+  .todo-actions button:hover:not(:disabled) {
+    transform: none;
+  }
+  
+  .error-message {
+    animation: none;
+  }
+}

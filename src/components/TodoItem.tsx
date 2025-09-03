@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Todo, UpdateTodoInput } from '../types/todo.js';
+import '../styles/TodoItem.css';
 
 interface TodoItemProps {
   todo: Todo;
@@ -113,7 +114,10 @@ export const TodoItem: React.FC<TodoItemProps> = React.memo(({
   // Render edit mode
   if (isEditing) {
     return (
-      <div className={`todo-item editing ${todo.completed ? 'completed' : ''}`}>
+      <div 
+        className={`todo-item editing ${todo.completed ? 'completed' : ''}`}
+        data-todo-id={todo.id}
+      >
         <div className="todo-checkbox">
           <input
             type="checkbox"
@@ -179,9 +183,26 @@ export const TodoItem: React.FC<TodoItemProps> = React.memo(({
     );
   }
 
+  // Determine todo status classes for styling
+  const getStatusClasses = () => {
+    const classes = ['todo-item'];
+    if (todo.completed) classes.push('completed');
+    if (isLoading || isSubmitting) classes.push('loading');
+    
+    // Future enhancement: Add overdue/due-soon classes based on dates
+    // These will be handled by Agent-4 when date logic is implemented
+    
+    return classes.join(' ');
+  };
+
   // Render view mode
   return (
-    <div className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+    <article 
+      className={getStatusClasses()}
+      data-todo-id={todo.id}
+      role="article"
+      aria-label={`Todo: ${todo.title}${todo.completed ? ' (completed)' : ''}`}
+    >
       <div className="todo-checkbox">
         <input
           type="checkbox"
@@ -189,11 +210,24 @@ export const TodoItem: React.FC<TodoItemProps> = React.memo(({
           onChange={handleToggle}
           disabled={disabled}
           aria-label={todo.completed ? 'Mark todo as incomplete' : 'Mark todo as completed'}
+          aria-describedby={`todo-content-${todo.id}`}
         />
       </div>
 
-      <div className="todo-content" onClick={handleStartEdit}>
-        <div className="todo-title">
+      <div 
+        className="todo-content" 
+        onClick={handleStartEdit}
+        role="button"
+        tabIndex={0}
+        aria-label="Click to edit todo"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleStartEdit();
+          }
+        }}
+      >
+        <div id={`todo-content-${todo.id}`} className="todo-title">
           {todo.title}
         </div>
         {todo.description && (
@@ -202,66 +236,79 @@ export const TodoItem: React.FC<TodoItemProps> = React.memo(({
           </div>
         )}
         {/* Placeholder for date/time info - will be handled by Agent-4 */}
-        <div className="todo-meta">
+        <div className="todo-meta" aria-label="Todo metadata">
           {todo.dueDate && (
-            <span className="due-date" title="Due date (handled by Agent-4)">
-              📅 {todo.dueDate.toLocaleDateString()}
+            <span className="due-date" title={`Due date: ${todo.dueDate.toLocaleDateString()}`}>
+              <span aria-hidden="true">📅</span>
+              <span className="sr-only">Due date: </span>
+              {todo.dueDate.toLocaleDateString()}
             </span>
           )}
           {todo.reminderTime && (
-            <span className="reminder-time" title="Reminder time (handled by Agent-4)">
-              ⏰ {todo.reminderTime.toLocaleTimeString()}
+            <span className="reminder-time" title={`Reminder time: ${todo.reminderTime.toLocaleTimeString()}`}>
+              <span aria-hidden="true">⏰</span>
+              <span className="sr-only">Reminder time: </span>
+              {todo.reminderTime.toLocaleTimeString()}
             </span>
           )}
         </div>
       </div>
 
-      <div className="todo-actions">
+      <div className="todo-actions" role="group" aria-label="Todo actions">
         <button
           onClick={handleStartEdit}
           disabled={disabled}
-          className="edit-button"
-          aria-label="Edit todo"
+          className="edit-button ghost"
+          aria-label={`Edit todo: ${todo.title}`}
+          title="Edit todo"
         >
-          ✏️
+          <span aria-hidden="true">✏️</span>
+          <span className="sr-only">Edit</span>
         </button>
         
         {!showDeleteConfirm ? (
           <button
             onClick={() => setShowDeleteConfirm(true)}
             disabled={disabled}
-            className="delete-button"
-            aria-label="Delete todo"
+            className="delete-button ghost"
+            aria-label={`Delete todo: ${todo.title}`}
+            title="Delete todo"
           >
-            🗑️
+            <span aria-hidden="true">🗑️</span>
+            <span className="sr-only">Delete</span>
           </button>
         ) : (
-          <div className="delete-confirm">
+          <div className="delete-confirm" role="group" aria-label="Confirm deletion">
             <button
               onClick={handleDelete}
               disabled={disabled}
-              className="confirm-delete"
-              aria-label="Confirm delete"
+              className="confirm-delete danger"
+              aria-label={`Confirm delete todo: ${todo.title}`}
+              title="Confirm delete"
             >
-              ✓
+              <span aria-hidden="true">✓</span>
+              <span className="sr-only">Confirm</span>
             </button>
             <button
               onClick={() => setShowDeleteConfirm(false)}
               disabled={disabled}
-              className="cancel-delete"
+              className="cancel-delete ghost"
               aria-label="Cancel delete"
+              title="Cancel delete"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
+              <span className="sr-only">Cancel</span>
             </button>
           </div>
         )}
       </div>
 
       {error && (
-        <div className="error-message" role="alert">
+        <div className="error-message" role="alert" aria-live="assertive">
+          <span aria-hidden="true">⚠️</span>
           {error}
         </div>
       )}
-    </div>
+    </article>
   );
 });

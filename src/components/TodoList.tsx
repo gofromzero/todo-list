@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Todo, UpdateTodoInput } from '../types/todo.js';
 import { TodoItem } from './TodoItem.js';
+import '../styles/TodoList.css';
 
 interface TodoListProps {
   todos: Todo[];
@@ -25,7 +26,11 @@ export const TodoList: React.FC<TodoListProps> = React.memo(({
   if (todos.length === 0) {
     return (
       <div className="todo-list-empty">
-        <p>{emptyMessage}</p>
+        <div className="todo-list-empty-icon">📝</div>
+        <div className="todo-list-empty-message">{emptyMessage}</div>
+        <div className="todo-list-empty-hint">
+          Start by adding your first todo above
+        </div>
       </div>
     );
   }
