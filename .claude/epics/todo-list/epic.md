@@ -4,7 +4,7 @@ status: backlog
 created: 2025-09-03T13:12:46Z
 progress: 0%
 prd: .claude/prds/todo-list.md
-github: [Will be updated when synced to GitHub]
+github: https://github.com/gofromzero/todo-list/issues/1
 ---
 
 # Epic: todo-list
@@ -134,15 +134,15 @@ High-level task categories that will be created:
 3. **Local Storage Edge Cases**: Quota limits and error handling
 
 ## Tasks Created
-- [ ] 001.md - Project Setup and Configuration (parallel: false)
-- [ ] 002.md - Core Data Layer and Models (parallel: false)
-- [ ] 003.md - Basic UI Components (parallel: true)
-- [ ] 004.md - Date/Time Management (parallel: true)
-- [ ] 005.md - Notification System (parallel: false)
-- [ ] 006.md - Responsive Design and Styling (parallel: true)
-- [ ] 007.md - Testing and Quality Assurance (parallel: false)
+- [ ] #2 - Project Setup and Configuration (parallel: false)
+- [ ] #3 - Core Data Layer and Models (parallel: false)
+- [ ] #4 - Basic UI Components (parallel: true)
+- [ ] #5 - Date/Time Management (parallel: true)
+- [ ] #6 - Notification System (parallel: false)
+- [ ] #7 - Responsive Design and Styling (parallel: true)
+- [ ] #8 - Testing and Quality Assurance (parallel: false)
 
 Total tasks: 7
-Parallel tasks: 3 (003, 004, 006)
-Sequential tasks: 4 (001, 002, 005, 007)
+Parallel tasks: 3
+Sequential tasks: 4
 Estimated total effort: 48-62 hours
