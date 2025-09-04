@@ -1,8 +1,9 @@
 ---
 name: todo-list
-status: backlog
+status: completed
 created: 2025-09-03T13:12:46Z
-progress: 0%
+completed: 2025-09-04T01:01:00Z
+progress: 100%
 prd: .claude/prds/todo-list.md
 github: https://github.com/gofromzero/todo-list/issues/1
 ---
